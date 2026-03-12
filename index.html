@@ -259,37 +259,41 @@
       void foundFlash.offsetWidth; // force reflow
       foundFlash.classList.add('flash');
 
-      // Clear any in-progress exit animations from a previous targetLost
-      logoPlane.removeAttribute('animation__fadeout');
-      logoPlane.removeAttribute('animation__scaleout');
-      glowDisc.removeAttribute('animation__fadeout');
-
-      // Hard-reset to start state so the pop-in always plays from scratch
-      logoPlane.setAttribute('scale', '0 0 0');
-      logoPlane.setAttribute('opacity', '0');
-      glowDisc.setAttribute('opacity', '0');
-      glowDisc.setAttribute('scale', '1 1 1');
-
-      // 1. Pop the logo in with a bouncy scale + fade
-      logoPlane.setAttribute('animation__scale',
-        'property: scale; from: 0 0 0; to: 1 1 1; dur: 650; easing: easeOutElastic');
-      logoPlane.setAttribute('animation__fadein',
-        'property: opacity; from: 0; to: 1; dur: 350; easing: easeOutQuad');
-
-      // 2. Fade in the glow disc
-      glowDisc.setAttribute('animation__fadein',
-        'property: opacity; from: 0; to: 0.40; dur: 500; easing: easeOutQuad');
-
-      // 3. Start the continuous float loop once the pop-in finishes
       clearTimeout(floatTimer);
-      floatTimer = setTimeout(() => {
-        logoPlane.setAttribute('animation__float',
-          `property: position; from: ${FLOAT_LOW}; to: ${FLOAT_HIGH}; dir: alternate; dur: 2200; easing: easeInOutSine; loop: true`);
-        glowDisc.setAttribute('animation__float',
-          `property: position; from: ${GLOW_LOW}; to: ${GLOW_HIGH}; dir: alternate; dur: 2200; easing: easeInOutSine; loop: true`);
-        glowDisc.setAttribute('animation__pulse',
-          'property: scale; from: 1 1 1; to: 1.18 1.18 1; dir: alternate; dur: 1800; easing: easeInOutSine; loop: true');
-      }, 600);
+
+      // Step 1: Strip ALL animations off both elements so A-Frame treats
+      // them as brand new on the next setAttribute call — this is what
+      // makes the pop-in replay every time, not just the first time.
+      ['animation__scale','animation__fadein','animation__fadeout',
+       'animation__scaleout','animation__float'].forEach(a => logoPlane.removeAttribute(a));
+      ['animation__fadein','animation__fadeout',
+       'animation__float','animation__pulse'].forEach(a => glowDisc.removeAttribute(a));
+
+      // Step 2: Reset properties to their starting values
+      logoPlane.setAttribute('scale',   '0 0 0');
+      logoPlane.setAttribute('opacity', '0');
+      glowDisc.setAttribute('opacity',  '0');
+      glowDisc.setAttribute('scale',    '1 1 1');
+
+      // Step 3: Wait one tick for A-Frame to register the removals,
+      // then kick off the pop-in and chain into the float loop
+      setTimeout(() => {
+        logoPlane.setAttribute('animation__scale',
+          'property: scale; from: 0 0 0; to: 1 1 1; dur: 650; easing: easeOutElastic');
+        logoPlane.setAttribute('animation__fadein',
+          'property: opacity; from: 0; to: 1; dur: 350; easing: easeOutQuad');
+        glowDisc.setAttribute('animation__fadein',
+          'property: opacity; from: 0; to: 0.40; dur: 500; easing: easeOutQuad');
+
+        floatTimer = setTimeout(() => {
+          logoPlane.setAttribute('animation__float',
+            `property: position; from: ${FLOAT_LOW}; to: ${FLOAT_HIGH}; dir: alternate; dur: 2200; easing: easeInOutSine; loop: true`);
+          glowDisc.setAttribute('animation__float',
+            `property: position; from: ${GLOW_LOW}; to: ${GLOW_HIGH}; dir: alternate; dur: 2200; easing: easeInOutSine; loop: true`);
+          glowDisc.setAttribute('animation__pulse',
+            'property: scale; from: 1 1 1; to: 1.18 1.18 1; dir: alternate; dur: 1800; easing: easeInOutSine; loop: true');
+        }, 650);
+      }, 50);
     });
 
     // ── TARGET LOST ─────────────────────────────────────────────────
