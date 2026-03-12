@@ -209,8 +209,8 @@
       <!-- Soft coral glow disc — sits just behind the logo -->
       <a-circle
         id="glow-disc"
-        position="0 0.85 0.005"
-        radius="0.19"
+        position="0 0.1 0.005"
+        radius="0.38"
         color="#F25B44"
         opacity="0"
         scale="1 1 1"
@@ -220,9 +220,9 @@
       <a-image
         id="logo-plane"
         src="#kiddom-logo"
-        position="0 0.85 0.01"
-        width="0.30"
-        height="0.30"
+        position="0 0.1 0.01"
+        width="0.60"
+        height="0.60"
         opacity="0"
         scale="0 0 0"
       ></a-image>
@@ -241,10 +241,10 @@
     const foundFlash  = document.getElementById('found-flash');
 
     // Baseline Y positions for the float animation
-    const FLOAT_LOW  = '0 0.81 0.01';
-    const FLOAT_HIGH = '0 0.91 0.01';
-    const GLOW_LOW   = '0 0.81 0.005';
-    const GLOW_HIGH  = '0 0.91 0.005';
+    const FLOAT_LOW  = '0 0.06 0.01';
+    const FLOAT_HIGH = '0 0.16 0.01';
+    const GLOW_LOW   = '0 0.06 0.005';
+    const GLOW_HIGH  = '0 0.16 0.005';
 
     let floatTimer = null;
 
@@ -267,7 +267,7 @@
 
       // 2. Fade in the glow disc
       glowDisc.setAttribute('animation__fadein',
-        'property: opacity; from: 0; to: 0.24; dur: 500; easing: easeOutQuad');
+        'property: opacity; from: 0; to: 0.40; dur: 500; easing: easeOutQuad');
 
       // 3. Start the continuous float loop once the pop-in finishes
       clearTimeout(floatTimer);
