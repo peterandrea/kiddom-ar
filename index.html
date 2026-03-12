@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Kiddom AR</title>
+
+  <!-- MindAR image tracking + A-Frame renderer -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      overflow: hidden;
+      background: #000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a-scene { width: 100vw; height: 100vh; }
+
+    /* ──────────────────────────────────────────────────────────────────
+       Scanning frame — four corner brackets that frame the book
+    ────────────────────────────────────────────────────────────────── */
+    #scan-frame {
+      position: fixed;
+      /* centre in the viewport, offset upward a touch so it feels natural */
+      top: 50%; left: 50%;
+      transform: translate(-50%, -54%);
+      width: min(72vw, 260px);
+      aspect-ratio: 5 / 7;   /* roughly matches portrait book proportions */
+      pointer-events: none;
+      z-index: 10;
+      transition: opacity 0.5s ease;
+    }
+
+    /* pseudo-elements + two extra divs for the four corners */
+    #scan-frame::before,
+    #scan-frame::after,
+    #scan-frame .c-bl,
+    #scan-frame .c-br {
+      content: '';
+      position: absolute;
+      width: 28px; height: 28px;
+      border: 2.5px solid rgba(255, 255, 255, 0.82);
+    }
+    #scan-frame::before { top: 0;    left: 0;  border-right: none; border-bottom: none; border-radius: 4px 0 0 0; }
+    #scan-frame::after  { top: 0;    right: 0; border-left:  none; border-bottom: none; border-radius: 0 4px 0 0; }
+    #scan-frame .c-bl   { bottom: 0; left: 0;  border-right: none; border-top:    none; border-radius: 0 0 0 4px; }
+    #scan-frame .c-br   { bottom: 0; right: 0; border-left:  none; border-top:    none; border-radius: 0 0 4px 0; }
+
+    /* Animated scan line */
+    #scan-line {
+      position: absolute;
+      left: 4px; right: 4px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(242, 91, 68, 0.9), transparent);
+      border-radius: 2px;
+      animation: scan 2.2s ease-in-out infinite;
+    }
+    @keyframes scan {
+      0%   { top: 6px;   opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { top: calc(100% - 8px); opacity: 0; }
+    }
+
+    #scan-frame.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ──────────────────────────────────────────────────────────────────
+       Hint pill — bottom of screen
+    ────────────────────────────────────────────────────────────────── */
+    #hint {
+      position: fixed;
+      bottom: 52px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(8, 8, 8, 0.64);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      padding: 12px 22px;
+      border-radius: 100px;
+      white-space: nowrap;
+      z-index: 20;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    #hint.hidden {
+      opacity: 0;
+      transform: translateX(-50%) translateY(6px);
+    }
+
+    /* ──────────────────────────────────────────────────────────────────
+       Kiddom badge — top of screen
+    ────────────────────────────────────────────────────────────────── */
+    #badge {
+      position: fixed;
+      top: env(safe-area-inset-top, 20px);
+      margin-top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(8, 8, 8, 0.55);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 16px 8px 10px;
+      border-radius: 100px;
+      z-index: 20;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    #badge img {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+    }
+
+    /* ──────────────────────────────────────────────────────────────────
+       "Found!" flash
+    ────────────────────────────────────────────────────────────────── */
+    #found-flash {
+      position: fixed;
+      inset: 0;
+      background: rgba(242, 91, 68, 0.18);
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+    #found-flash.flash {
+      animation: flash 0.5s ease-out forwards;
+    }
+    @keyframes flash {
+      0%   { opacity: 1; }
+      100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── UI Overlays ──────────────────────────────────────────────── -->
+  <div id="scan-frame">
+    <div class="c-bl"></div>
+    <div class="c-br"></div>
+    <div id="scan-line"></div>
+  </div>
+
+  <div id="hint">📖 Point at the book cover</div>
+
+  <div id="badge">
+    <img src="./assets/kiddom-logo.png" alt="Kiddom">
+    Kiddom AR
+  </div>
+
+  <div id="found-flash"></div>
+
+  <!-- ── AR Scene ─────────────────────────────────────────────────── -->
+  <!--
+    mindar-image config:
+      imageTargetSrc  — compiled .mind file for our book cover target
+      autoStart       — begin tracking as soon as the scene loads
+      uiLoading yes   — keep MindAR's built-in loading spinner
+      uiScanning no   — we draw our own scanning UI above
+      uiError yes     — show MindAR's error state (e.g. camera denied)
+  -->
+  <a-scene
+    id="ar-scene"
+    mindar-image="imageTargetSrc: ./assets/targets.mind;
+                  autoStart: true;
+                  uiLoading: yes;
+                  uiScanning: no;
+                  uiError: yes;"
+    color-space="sRGB"
+    renderer="colorManagement: true; physicallyCorrectLights: true;"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+  >
+
+    <a-assets>
+      <img id="kiddom-logo" src="./assets/kiddom-logo.png" crossorigin="anonymous">
+    </a-assets>
+
+    <!-- Camera — no look-controls so it's fixed to the device camera -->
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <!--
+      ── Overlay anchored to the book cover ────────────────────────────
+      MindAR normalises the target width to 1 unit.
+      Our cover is roughly 5:7 portrait, so height ≈ 1.4 units.
+        - Centre of cover  = (0,    0,    0)
+        - Top of cover     ≈ (0,   +0.70, 0)
+      We float the logo above the cover at y ≈ 0.85, z = 0.01 (in front).
+    -->
+    <a-entity id="book-target" mindar-image-target="targetIndex: 0">
+
+      <!-- Soft coral glow disc — sits just behind the logo -->
+      <a-circle
+        id="glow-disc"
+        position="0 0.85 0.005"
+        radius="0.19"
+        color="#F25B44"
+        opacity="0"
+        scale="1 1 1"
+      ></a-circle>
+
+      <!-- Floating Kiddom logo -->
+      <a-image
+        id="logo-plane"
+        src="#kiddom-logo"
+        position="0 0.85 0.01"
+        width="0.30"
+        height="0.30"
+        opacity="0"
+        scale="0 0 0"
+      ></a-image>
+
+    </a-entity>
+
+  </a-scene>
+
+  <!-- ── Animation controller ─────────────────────────────────────── -->
+  <script>
+    const bookTarget  = document.getElementById('book-target');
+    const logoPlane   = document.getElementById('logo-plane');
+    const glowDisc    = document.getElementById('glow-disc');
+    const hint        = document.getElementById('hint');
+    const scanFrame   = document.getElementById('scan-frame');
+    const foundFlash  = document.getElementById('found-flash');
+
+    // Baseline Y positions for the float animation
+    const FLOAT_LOW  = '0 0.81 0.01';
+    const FLOAT_HIGH = '0 0.91 0.01';
+    const GLOW_LOW   = '0 0.81 0.005';
+    const GLOW_HIGH  = '0 0.91 0.005';
+
+    let floatTimer = null;
+
+    // ── TARGET FOUND ────────────────────────────────────────────────
+    bookTarget.addEventListener('targetFound', () => {
+      // Hide scanning UI
+      hint.classList.add('hidden');
+      scanFrame.classList.add('hidden');
+
+      // Brief coral flash on the viewport
+      foundFlash.classList.remove('flash');
+      void foundFlash.offsetWidth; // force reflow
+      foundFlash.classList.add('flash');
+
+      // 1. Pop the logo in with a bouncy scale + fade
+      logoPlane.setAttribute('animation__scale',
+        'property: scale; from: 0 0 0; to: 1 1 1; dur: 650; easing: easeOutElastic');
+      logoPlane.setAttribute('animation__fadein',
+        'property: opacity; from: 0; to: 1; dur: 350; easing: easeOutQuad');
+
+      // 2. Fade in the glow disc
+      glowDisc.setAttribute('animation__fadein',
+        'property: opacity; from: 0; to: 0.24; dur: 500; easing: easeOutQuad');
+
+      // 3. Start the continuous float loop once the pop-in finishes
+      clearTimeout(floatTimer);
+      floatTimer = setTimeout(() => {
+        logoPlane.setAttribute('animation__float',
+          `property: position; from: ${FLOAT_LOW}; to: ${FLOAT_HIGH}; dir: alternate; dur: 2200; easing: easeInOutSine; loop: true`);
+        glowDisc.setAttribute('animation__float',
+          `property: position; from: ${GLOW_LOW}; to: ${GLOW_HIGH}; dir: alternate; dur: 2200; easing: easeInOutSine; loop: true`);
+        glowDisc.setAttribute('animation__pulse',
+          'property: scale; from: 1 1 1; to: 1.18 1.18 1; dir: alternate; dur: 1800; easing: easeInOutSine; loop: true');
+      }, 600);
+    });
+
+    // ── TARGET LOST ─────────────────────────────────────────────────
+    bookTarget.addEventListener('targetLost', () => {
+      clearTimeout(floatTimer);
+
+      // Show scanning UI again
+      hint.classList.remove('hidden');
+      scanFrame.classList.remove('hidden');
+
+      // Stop float animations
+      logoPlane.removeAttribute('animation__float');
+      glowDisc.removeAttribute('animation__float');
+      glowDisc.removeAttribute('animation__pulse');
+
+      // Fade out logo + glow
+      logoPlane.setAttribute('animation__fadeout',
+        'property: opacity; from: 1; to: 0; dur: 280; easing: easeInQuad');
+      logoPlane.setAttribute('animation__scaleout',
+        'property: scale; from: 1 1 1; to: 0.6 0.6 0.6; dur: 280; easing: easeInQuad');
+      glowDisc.setAttribute('animation__fadeout',
+        'property: opacity; from: 0.24; to: 0; dur: 280; easing: easeInQuad');
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Coral background -->
+  <circle cx="100" cy="100" r="100" fill="#F25B44"/>
+
+  <!--
+    The Kiddom K mark is made of two geometric pieces:
+    1. WHITE  — upper/left stroke: a rounded rect with the bottom-right corner
+                cut diagonally to form the upper diagonal of the K
+    2. SILVER — lower stroke: a rounded chevron/triangle pointing right
+                that forms the lower diagonal of the K
+  -->
+
+  <!-- White upper piece -->
+  <path d="
+    M 57,44
+    Q 57,38 63,38
+    L 143,38
+    Q 149,38 149,44
+    L 149,97
+    L 97,114
+    L 57,114
+    Q 51,114 51,108
+    L 51,44
+    Z
+  " fill="white"/>
+
+  <!-- Silver/gray lower piece (rounded chevron) -->
+  <path d="
+    M 57,124
+    Q 51,124 54,130
+    L 97,163
+    Q 100,166 103,163
+    L 149,124
+    Z
+  " fill="#D0CBC5"/>
+</svg>

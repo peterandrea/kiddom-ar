@@ -1,0 +1,11 @@
+{
+  "name": "kiddom-ar",
+  "version": "0.1.0",
+  "description": "Augmented Reality experience for the Kiddom California Math book cover",
+  "scripts": {
+    "dev": "npx http-server . -p 3000 -c-1 --cors -o",
+    "tunnel": "npx cloudflared tunnel --url http://localhost:3000"
+  },
+  "keywords": ["ar", "mindar", "aframe", "kiddom", "education"],
+  "license": "MIT"
+}

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --version)",
+      "Bash(gh auth status)",
+      "Bash(git --version)",
+      "Bash(lsof -i :3000)"
+    ]
+  }
+}

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR Target Compiler · Kiddom AR</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f7f7f5;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 24px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+    header img { width: 40px; height: 40px; border-radius: 50%; }
+    header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+    header span { font-size: 20px; font-weight: 300; color: #888; }
+
+    /* ── Card ── */
+    .card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 2px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04);
+      width: 100%;
+      max-width: 560px;
+      padding: 36px;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    /* ── Drop zone ── */
+    #drop-zone {
+      border: 2px dashed #ddd;
+      border-radius: 14px;
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    #drop-zone:hover, #drop-zone.drag-over {
+      border-color: #F25B44;
+      background: #fff5f3;
+    }
+    #drop-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    #drop-zone .icon { font-size: 40px; margin-bottom: 12px; }
+    #drop-zone .label { font-size: 15px; font-weight: 500; color: #333; }
+    #drop-zone .sub   { font-size: 13px; color: #999; margin-top: 4px; }
+
+    /* ── Preview ── */
+    #preview-wrap {
+      display: none;
+      margin-bottom: 24px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #eee;
+    }
+    #preview-wrap img {
+      width: 100%;
+      max-height: 260px;
+      object-fit: contain;
+      background: #f0f0f0;
+      display: block;
+    }
+    #preview-label {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #555;
+      background: #fafafa;
+      border-top: 1px solid #eee;
+    }
+
+    /* ── Compile button ── */
+    #compile-btn {
+      width: 100%;
+      padding: 16px;
+      background: #F25B44;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: none;
+    }
+    #compile-btn:hover  { background: #e04a33; }
+    #compile-btn:active { transform: scale(0.98); }
+    #compile-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ── Progress ── */
+    #progress-wrap {
+      display: none;
+      margin-top: 20px;
+    }
+    #progress-label {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+    #progress-bar-bg {
+      height: 8px;
+      background: #eee;
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    #progress-bar {
+      height: 100%;
+      background: #F25B44;
+      border-radius: 100px;
+      width: 0%;
+      transition: width 0.2s;
+    }
+
+    /* ── Success ── */
+    #success-wrap {
+      display: none;
+      margin-top: 24px;
+      background: #f0faf4;
+      border: 1px solid #b6e8c8;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    #success-wrap .check { font-size: 32px; margin-bottom: 8px; }
+    #success-wrap h3 { font-size: 17px; font-weight: 700; color: #1a7a45; margin-bottom: 4px; }
+    #success-wrap p  { font-size: 13px; color: #2d7a50; line-height: 1.5; }
+    #success-wrap code {
+      display: inline-block;
+      background: #dff2e8;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      margin-top: 8px;
+    }
+
+    /* ── Steps footer ── */
+    .steps {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #f0f0f0;
+    }
+    .steps h4 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #999; margin-bottom: 14px; }
+    .step {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.4;
+    }
+    .step-num {
+      width: 22px; height: 22px;
+      background: #f0f0f0;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #888;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="../assets/kiddom-logo.png" alt="Kiddom">
+    <h1>Target Compiler</h1>
+    <span>· Kiddom AR</span>
+  </header>
+
+  <div class="card">
+    <h2>Compile Book Cover</h2>
+    <p class="subtitle">
+      Upload a photo of the book cover to generate a <code style="font-size:12px;background:#f4f4f4;padding:1px 6px;border-radius:4px;">targets.mind</code> tracking file.
+      Use the clearest, most detailed image you have for the best tracking quality.
+    </p>
+
+    <!-- Drop / select -->
+    <div id="drop-zone">
+      <input type="file" id="file-input" accept="image/*">
+      <div class="icon">📖</div>
+      <div class="label">Drop book cover image here</div>
+      <div class="sub">or click to browse · JPG, PNG, WEBP</div>
+    </div>
+
+    <!-- Preview -->
+    <div id="preview-wrap">
+      <img id="preview-img" src="" alt="Preview">
+      <div id="preview-label"></div>
+    </div>
+
+    <!-- Compile -->
+    <button id="compile-btn" onclick="compile()">Compile Target File →</button>
+
+    <!-- Progress -->
+    <div id="progress-wrap">
+      <div id="progress-label">
+        <span id="progress-text">Analysing image features...</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div id="progress-bar-bg"><div id="progress-bar"></div></div>
+    </div>
+
+    <!-- Success -->
+    <div id="success-wrap">
+      <div class="check">✅</div>
+      <h3>targets.mind downloaded!</h3>
+      <p>
+        Move the downloaded file into your project's <code>assets/</code> folder,
+        then commit &amp; push to GitHub.
+      </p>
+    </div>
+
+    <!-- Steps -->
+    <div class="steps">
+      <h4>Next steps</h4>
+      <div class="step"><div class="step-num">1</div><span>Upload the book cover image above and click Compile.</span></div>
+      <div class="step"><div class="step-num">2</div><span>Move <code style="font-size:12px;background:#f4f4f4;padding:1px 5px;border-radius:4px;">targets.mind</code> into <code style="font-size:12px;background:#f4f4f4;padding:1px 5px;border-radius:4px;">assets/</code> in this project.</span></div>
+      <div class="step"><div class="step-num">3</div><span>Commit &amp; push to GitHub — Pages will serve it over HTTPS automatically.</span></div>
+      <div class="step"><div class="step-num">4</div><span>Open the GitHub Pages URL on your phone and point at the book! 🎉</span></div>
+    </div>
+  </div>
+
+  <script>
+    const dropZone    = document.getElementById('drop-zone');
+    const fileInput   = document.getElementById('file-input');
+    const previewWrap = document.getElementById('preview-wrap');
+    const previewImg  = document.getElementById('preview-img');
+    const previewLbl  = document.getElementById('preview-label');
+    const compileBtn  = document.getElementById('compile-btn');
+    const progressW   = document.getElementById('progress-wrap');
+    const progressBar = document.getElementById('progress-bar');
+    const progressTxt = document.getElementById('progress-text');
+    const progressPct = document.getElementById('progress-pct');
+    const successWrap = document.getElementById('success-wrap');
+
+    let selectedFile = null;
+
+    // ── Drag & drop styling ──────────────────────────────────────────
+    dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) handleFile(file);
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) handleFile(fileInput.files[0]);
+    });
+
+    // ── Show preview ─────────────────────────────────────────────────
+    function handleFile(file) {
+      selectedFile = file;
+      const url = URL.createObjectURL(file);
+      previewImg.src = url;
+      previewLbl.textContent = `${file.name}  ·  ${(file.size / 1024).toFixed(0)} KB`;
+      previewWrap.style.display = 'block';
+      compileBtn.style.display  = 'block';
+      successWrap.style.display = 'none';
+      progressW.style.display   = 'none';
+    }
+
+    // ── Compile ───────────────────────────────────────────────────────
+    async function compile() {
+      if (!selectedFile) return;
+
+      compileBtn.disabled      = true;
+      progressW.style.display  = 'block';
+      successWrap.style.display = 'none';
+
+      // Load the image element
+      const img = new Image();
+      img.src = URL.createObjectURL(selectedFile);
+      await new Promise(resolve => { img.onload = resolve; });
+
+      // Run MindAR compiler
+      const compiler = new MINDAR.IMAGE.Compiler();
+      await compiler.compileImageTargets([img], (progress) => {
+        const pct = Math.round(progress * 100);
+        progressBar.style.width = pct + '%';
+        progressPct.textContent  = pct + '%';
+        if      (pct < 30)  progressTxt.textContent = 'Extracting image features...';
+        else if (pct < 60)  progressTxt.textContent = 'Building feature descriptors...';
+        else if (pct < 90)  progressTxt.textContent = 'Optimising tracking data...';
+        else                progressTxt.textContent = 'Finalising...';
+      });
+
+      // Export and trigger download
+      const buffer = await compiler.exportData();
+      const blob   = new Blob([buffer]);
+      const link   = document.createElement('a');
+      link.href     = URL.createObjectURL(blob);
+      link.download = 'targets.mind';
+      link.click();
+
+      // Show success
+      progressW.style.display   = 'none';
+      successWrap.style.display = 'block';
+      compileBtn.disabled        = false;
+    }
+  </script>
+
+</body>
+</html>
