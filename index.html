@@ -259,6 +259,17 @@
       void foundFlash.offsetWidth; // force reflow
       foundFlash.classList.add('flash');
 
+      // Clear any in-progress exit animations from a previous targetLost
+      logoPlane.removeAttribute('animation__fadeout');
+      logoPlane.removeAttribute('animation__scaleout');
+      glowDisc.removeAttribute('animation__fadeout');
+
+      // Hard-reset to start state so the pop-in always plays from scratch
+      logoPlane.setAttribute('scale', '0 0 0');
+      logoPlane.setAttribute('opacity', '0');
+      glowDisc.setAttribute('opacity', '0');
+      glowDisc.setAttribute('scale', '1 1 1');
+
       // 1. Pop the logo in with a bouncy scale + fade
       logoPlane.setAttribute('animation__scale',
         'property: scale; from: 0 0 0; to: 1 1 1; dur: 650; easing: easeOutElastic');
