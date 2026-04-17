@@ -1,0 +1,120 @@
+.activity1 {
+  flex: 1;
+}
+
+.activity-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--coral);
+  margin-bottom: 6px;
+}
+
+/* ── Tiling card grid ────────────────────────────────────── */
+.tiling-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.tiling-card {
+  background: var(--surface);
+  border: 2.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 150ms, box-shadow 150ms, opacity 200ms, transform 120ms;
+  position: relative;
+  min-height: 140px;
+  font-family: var(--font);
+}
+
+.tiling-card:active {
+  transform: scale(0.97);
+}
+
+.tiling-card--selected {
+  border-color: var(--coral);
+  box-shadow: 0 0 0 3px var(--coral-dim);
+}
+
+.tiling-card--disabled {
+  opacity: 0.48;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-7px); }
+  60%       { transform: translateX(7px); }
+  80%       { transform: translateX(-4px); }
+}
+.tiling-card--shake {
+  animation: shake 0.38s ease;
+}
+
+.tiling-card__check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  background: var(--coral);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tiling-card__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ── Reasoning section ───────────────────────────────────── */
+.reasoning-section {
+  animation: screenEnter 200ms ease-out;
+}
+
+.reasoning-label {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.reasoning-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font);
+  font-size: 15px;
+  color: var(--text-primary);
+  background: var(--surface);
+  resize: vertical;
+  min-height: 90px;
+  transition: border-color 150ms;
+  outline: none;
+  line-height: 1.5;
+}
+
+.reasoning-input:focus {
+  border-color: var(--coral);
+}
+
+.reasoning-input::placeholder {
+  color: #BCBAB6;
+}

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "tiling-lesson",
+      "runtimeExecutable": "/Applications/Cursor.app/Contents/Resources/app/resources/helpers/node",
+      "runtimeArgs": ["node_modules/.bin/vite", "--port", "5173", "--host"],
+      "port": 5173
+    }
+  ]
+}

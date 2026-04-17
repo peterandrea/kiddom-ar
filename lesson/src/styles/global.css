@@ -1,0 +1,112 @@
+:root {
+  --coral:        #F25B44;
+  --coral-dark:   #D14A35;
+  --coral-light:  #FDE8E5;
+  --coral-dim:    rgba(242, 91, 68, 0.15);
+
+  --red-block:    #D93025;
+  --blue-block:   #2563EB;
+  --green-block:  #16A34A;
+  --red-hi:       #FF6B5B;
+  --blue-hi:      #60A5FA;
+  --green-hi:     #4ADE80;
+
+  --text-primary:   #1A1A1A;
+  --text-secondary: #555555;
+  --surface:        #FFFFFF;
+  --background:     #F7F4F0;
+  --border:         #E0DAD4;
+
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   20px;
+  --radius-pill: 100px;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--background);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100dvh;
+}
+
+/* ── Shared layout shell ──────────────────────────────────── */
+.lesson-shell {
+  max-width: 600px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px 40px;
+}
+
+@media (min-width: 480px) {
+  .lesson-shell { padding: 0 24px 48px; }
+}
+
+/* ── Screen enter animation ───────────────────────────────── */
+@keyframes screenEnter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.screen-enter {
+  animation: screenEnter 220ms ease-out forwards;
+}
+
+/* ── Shared card ──────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+}
+
+/* ── Shared primary button ────────────────────────────────── */
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  background: var(--coral);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms, transform 100ms, opacity 150ms;
+  margin-top: 24px;
+  letter-spacing: 0.01em;
+}
+.btn-primary:active           { transform: scale(0.98); background: var(--coral-dark); }
+.btn-primary:disabled         { opacity: 0.38; pointer-events: none; cursor: default; }
+
+/* ── Activity headings ────────────────────────────────────── */
+.activity-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+
+.activity-subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}

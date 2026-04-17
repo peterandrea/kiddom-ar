@@ -1,0 +1,80 @@
+.activity2 {
+  flex: 1;
+}
+
+/* ── Pattern toggle ──────────────────────────────────────── */
+.pattern-toggle {
+  display: flex;
+  background: var(--border);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  width: fit-content;
+  margin: 0 auto 16px;
+}
+
+.pattern-toggle__btn {
+  padding: 9px 28px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 180ms, color 180ms;
+  color: var(--text-secondary);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pattern-toggle__btn--active {
+  background: var(--coral);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── SVG wrapper ─────────────────────────────────────────── */
+.svg-pattern-wrapper {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  animation: screenEnter 200ms ease-out;
+}
+
+/* ── Discussion prompts ──────────────────────────────────── */
+.discussion-prompts {
+  margin-bottom: 4px;
+}
+
+.discussion-prompts__heading {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--coral);
+  margin-bottom: 10px;
+}
+
+.discussion-prompts__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.discussion-prompts__list li {
+  font-size: 15px;
+  color: var(--text-primary);
+  line-height: 1.5;
+  padding-left: 16px;
+  position: relative;
+}
+
+.discussion-prompts__list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--coral);
+  font-weight: 600;
+}
