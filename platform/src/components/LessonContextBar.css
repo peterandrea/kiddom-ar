@@ -1,0 +1,88 @@
+.lesson-ctx {
+  height: 44px;
+  background: #EDE9E3;
+  border-bottom: 1px solid #D4CEC6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+
+.lesson-ctx__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lesson-ctx__mode-badge {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 2px 9px;
+  border-radius: 100px;
+}
+
+.lesson-ctx__mode-badge--purple { background: #EDE9FE; color: #6B4FBB; }
+.lesson-ctx__mode-badge--coral  { background: #FDE8E5; color: #D14A35; }
+.lesson-ctx__mode-badge--teal   { background: #CCFAF4; color: #0A7A6E; }
+
+.lesson-ctx__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lesson-ctx__sep {
+  color: #BDB5AB;
+  font-size: 14px;
+}
+
+.lesson-ctx__crumb {
+  font-size: 13px;
+  font-weight: 500;
+  color: #9B8E82;
+}
+
+.lesson-ctx__crumb--link {
+  cursor: pointer;
+  transition: color 120ms;
+}
+.lesson-ctx__crumb--link:hover { color: #3D3530; }
+
+.lesson-ctx__crumb--current {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+/* Right nav */
+.lesson-ctx__right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lesson-ctx__nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #9B8E82;
+  border-radius: var(--radius-sm);
+  transition: background 120ms, color 120ms;
+}
+.lesson-ctx__nav-btn:hover {
+  background: rgba(0,0,0,0.06);
+  color: #1A1A1A;
+}
+
+.lesson-ctx__pip {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #C4B8AC;
+}

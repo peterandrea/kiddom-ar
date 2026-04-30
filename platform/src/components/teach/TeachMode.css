@@ -1,0 +1,425 @@
+.teach-mode {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Presentation section — sticky ── */
+.teach-pres-section {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+/* ── Guide section (naturally scrolls with the page) ── */
+.teach-guide-section {
+  background: var(--background);
+  padding: 28px 24px 48px;
+}
+
+.teach-guide-inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.teach-guide__heading {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.teach-guide__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Step card ── */
+.teach-step {
+  padding: 18px;
+  border: 2px solid transparent;
+  transition: border-color 250ms;
+}
+
+.teach-step--active {
+  border-color: #2563EB;
+  background: #F0F5FF;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.07);
+}
+
+/* Header row: title-row (left) + timer (right) */
+.teach-step__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+/* Type pill + title inline */
+.teach-step__title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.teach-step__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+/* Thumbnail + grouping + buttons */
+.teach-step__meta-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.teach-thumb {
+  width: 100px;
+  height: 75px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.teach-step__meta-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Grouping pill */
+.grouping-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  width: fit-content;
+}
+
+/* Actions row (slide btn + buttons) */
+.teach-step__actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+/* ── Horizontal numbered step actions ── */
+.teach-action-steps {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.teach-action-steps::-webkit-scrollbar { display: none; }
+
+.teach-action-step {
+  flex: 1;
+  min-width: 120px;
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border-left: 1px solid var(--border);
+  position: relative;
+}
+
+.teach-action-step:first-child {
+  border-left: none;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+.teach-action-step:last-child {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* Arrow connector between steps */
+.teach-action-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: -7px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 6px solid var(--border);
+  z-index: 1;
+}
+.teach-action-step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 5px solid var(--surface-2);
+  z-index: 2;
+}
+
+.teach-action-step__top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.teach-action-step__num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  border: 1.5px solid var(--border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.teach-action-step__icon {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.teach-action-step__text {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+/* ── Jump to slide btn ── */
+.teach-step__jump-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--surface-3);
+  padding: 4px 9px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  transition: background 150ms;
+}
+.teach-step__jump-btn:hover { background: var(--border); }
+
+/* ── Activity buttons: print icon + Classwork dropdown + Assign ── */
+.activity-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Print icon button */
+.activity-btns__icon-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 150ms, color 150ms;
+  flex-shrink: 0;
+}
+.activity-btns__icon-btn:hover {
+  background: var(--surface-3);
+  color: var(--text-primary);
+}
+
+/* Classwork dropdown wrapper */
+.activity-btns__classwork-wrap {
+  position: relative;
+}
+
+.activity-btns__classwork {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--coral);
+  color: #fff;
+  transition: background 150ms;
+  white-space: nowrap;
+}
+.activity-btns__classwork:hover { background: var(--coral-dark); }
+.activity-btns__classwork--open { background: var(--coral-dark); }
+
+.activity-btns__caret {
+  transition: transform 200ms;
+  opacity: 0.85;
+}
+.activity-btns__caret--up {
+  transform: rotate(180deg);
+}
+
+/* Dropdown */
+.activity-btns__dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  min-width: 190px;
+  z-index: 200;
+  overflow: hidden;
+  animation: dropIn 150ms ease;
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.activity-btns__drop-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: background 120ms;
+  text-align: left;
+}
+.activity-btns__drop-item:hover { background: var(--surface-2); }
+.activity-btns__drop-item svg { color: var(--text-secondary); flex-shrink: 0; }
+
+/* Assign button */
+.activity-btns__assign {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--coral);
+  color: #fff;
+  transition: background 150ms;
+  white-space: nowrap;
+}
+.activity-btns__assign:hover { background: var(--coral-dark); }
+
+/* Tags */
+.teach-tag { font-size: 12px; font-weight: 600; }
+.teach-tag--coral   { background: var(--coral-light);  color: var(--coral-dark); }
+.teach-tag--teal    { background: var(--teal-light);   color: var(--teal); }
+.teach-tag--purple  { background: var(--purple-light); color: var(--purple); }
+.teach-tag--amber   { background: var(--amber-light);  color: var(--amber); }
+.teach-tag--neutral { background: var(--surface-3);    color: var(--text-secondary); }
+
+
+/* ── Timer ── */
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.timer__ring-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer__ring { display: block; }
+
+.timer__display {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer__time {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.timer--warning .timer__time { color: var(--amber); }
+.timer--done .timer__time { color: var(--green); }
+
+.timer__time--done { font-size: 15px; }
+
+.timer__controls {
+  display: flex;
+  gap: 4px;
+}
+
+.timer__btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  transition: all 150ms;
+}
+
+.timer__btn--play {
+  background: var(--teal);
+  color: #fff;
+}
+.timer__btn--play:hover { background: var(--teal); opacity: 0.85; }
+.timer--warning .timer__btn--play { background: var(--amber); }
+
+.timer__btn--pause {
+  background: var(--text-primary);
+  color: #fff;
+}
+
+.timer__btn--reset {
+  background: var(--surface-3);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.timer__btn--reset:hover { background: var(--border); }
+
+.timer__btn:disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
